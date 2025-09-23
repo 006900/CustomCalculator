@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.calculatorpro.core.navigation.NavigationWrapper
 import com.example.calculatorpro.ui.theme.CalculatorProTheme
 
 class MainActivity : ComponentActivity() {
@@ -12,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CalculatorProTheme {
-
+                NavigationWrapper()
             }
         }
     }
