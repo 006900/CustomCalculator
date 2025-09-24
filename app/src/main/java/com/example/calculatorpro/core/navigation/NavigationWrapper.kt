@@ -9,10 +9,10 @@ import com.example.calculatorpro.core.CalculatorViewModel
 import com.example.calculatorpro.core.CurrencyConverterScreen
 
 @Composable
-fun NavigationWrapper() {
+fun NavigationWrapper(viewModel: CalculatorViewModel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Calculator) {
-        composable <Calculator>{ CalculatorScreen() }
+        composable <Calculator>{ CalculatorScreen(viewModel = viewModel) }
         composable <CurrencyConverter>{ CurrencyConverterScreen() }
     }
 }
