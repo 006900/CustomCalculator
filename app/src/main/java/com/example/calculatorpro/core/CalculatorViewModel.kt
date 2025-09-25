@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import com.example.calculatorpro.ui.theme.Accent
 import com.example.calculatorpro.ui.theme.Secondary
 import com.example.calculatorpro.ui.theme.Tertiary
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.Scriptable
 
 class CalculatorViewModel: ViewModel() {
 
@@ -15,8 +17,30 @@ class CalculatorViewModel: ViewModel() {
         private set
 
     fun changeText(value: String){
-        state = state.copy(text = state.text + value )
+        state = state.copy(text = state.text + value)
     }
+
+    fun clear(value: String){
+        if (value == "c"){
+            state = state.copy(text = "", result = "")
+        }else{state = state.copy(text = state.text.dropLast(1))}
+    }
+
+    fun result(){
+        state = state.copy(result = calculateResult(state.text) )
+    }
+
+    fun calculateResult(equation: String): String{
+        val context : Context = Context.enter()
+        context.optimizationLevel = -1
+        val scriptable : Scriptable = context.initStandardObjects()
+        var finalResult = context.evaluateString(scriptable,equation,"javascript",1,null).toString()
+        if (finalResult.endsWith(".0")){
+            finalResult = finalResult.replace(".0","")
+        }
+        return finalResult
+    }
+
      fun changeColor(value: String): StateColor{
          val numericType = StateColor(textColor = Color.White, backGround = Secondary)
          val symbolType = StateColor(textColor = Accent, backGround = Tertiary)
