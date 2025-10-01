@@ -2,9 +2,12 @@ package com.example.calculatorpro.core
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.forEach
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -64,7 +67,7 @@ private fun Content(modifier: Modifier = Modifier, viewModel: CalculatorViewMode
     ) {
         Box(
             modifier = Modifier
-                .weight(0.4f)
+                .weight(4f)
                 .fillMaxWidth()
                 .padding(10.dp),
             contentAlignment = Alignment.BottomEnd
@@ -74,47 +77,71 @@ private fun Content(modifier: Modifier = Modifier, viewModel: CalculatorViewMode
                 Text(displayText.result, fontSize = 15.sp, color = Color.LightGray)
             }
         }
-        ExampleButtons(
+        Sexo(
             modifier = Modifier
-                .weight(0.6f)
-                .fillMaxSize()
-                .padding(10.dp),
-            viewModel = viewModel
+                .weight(6f)
+                .fillMaxSize(),viewModel = viewModel
         )
     }
 }
 
 @Composable
-private fun ExampleButtons(modifier: Modifier = Modifier, viewModel: CalculatorViewModel) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.weight(1f)) {
-            Buttons(modifier = Modifier.weight(1f), value = "c") { viewModel.clear(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "/") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "%") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "b") { viewModel.clear(it) }
-        }
-        Row(modifier = Modifier.weight(1f)) {
-            Buttons(modifier = Modifier.weight(1f), value = "7") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "8") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "9") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "*") { viewModel.changeText(it) }
-        }
-        Row(modifier = Modifier.weight(1f)) {
-            Buttons(modifier = Modifier.weight(1f), value = "4") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "5") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "6") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "-") { viewModel.changeText(it) }
-        }
-        Row(modifier = Modifier.weight(1f)) {
-            Buttons(modifier = Modifier.weight(1f), value = "1") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "2") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "3") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "+") { viewModel.changeText(it) }
-        }
-        Row(modifier = Modifier.weight(1f)) {
-            Buttons(modifier = Modifier.weight(2f), value = "0") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = ",") { viewModel.changeText(it) }
-            Buttons(modifier = Modifier.weight(1f), value = "=") { viewModel.result() }
+fun Sexo(modifier: Modifier = Modifier,viewModel: CalculatorViewModel) {
+    val keys = listOf(
+        "c", "/", "%","⌫",
+        "7", "8", "9","*",
+        "4", "5", "6","-",
+        "1", "2", "3","+",
+        "0", ",", "="
+    )
+
+    Column(
+        modifier = modifier.background(Color.hsl(240f, 0.1f, 0.2f)) // Un fondo azul oscuro
+    ) {
+        // Filas de botones
+        val chunkedKeys = keys.chunked(4)
+
+        chunkedKeys.forEachIndexed { rowIndex, rowKeys ->
+            Row(
+                modifier = Modifier
+                    .weight(1f) // Cada fila de botones toma un peso igual
+                    .fillMaxWidth()
+                    .background(Color.hsl(240f, 0.1f, 0.25f)), // Un poco más claro que el fondo general
+                horizontalArrangement = Arrangement.spacedBy(2.dp) // Espacio reducido entre botones
+            ) {
+                // Caso especial para la última fila que contiene "0", ",", "="
+                if (rowIndex == chunkedKeys.size - 1 && rowKeys.contains("0")) {
+
+                    rowKeys.forEach { keyLabel ->
+                        val buttonWeight = when (keyLabel) {
+                            "0" -> 2f  // El botón "=" toma el doble de peso
+                            else -> 1f // "0" y "," toman peso normal
+                        }
+                        Buttons(modifier = Modifier.weight(buttonWeight),value = keyLabel) { if (keyLabel == "=") viewModel.result() else viewModel.changeText(it) }
+                    }
+                } else if (rowIndex == 0 && rowKeys.contains("c")){
+
+                    rowKeys.forEach { keyLabel ->
+                        val buttonWeight = when (keyLabel) {
+                            "0" -> 2f  // El botón "=" toma el doble de peso
+                            else -> 1f // "0" y "," toman peso normal
+                        }
+                        Buttons(modifier = Modifier.weight(buttonWeight),value = keyLabel) { viewModel.clear(it) }
+                    }
+
+                }else { // Para todas las otras filas o si la última fila no es la especial
+                    rowKeys.forEach { keyLabel ->
+                        Buttons(modifier = Modifier.weight(1f), value = keyLabel) { viewModel.changeText(it)}
+                    }
+                    // Si la fila no está completa y quieres rellenar con espacio vacío
+                    // para mantener la alineación con `itemsPerRow = 4`
+                    if (rowKeys.size < 4 && !(rowIndex == chunkedKeys.size - 1 && rowKeys.contains("="))) {
+                        repeat(4 - rowKeys.size) {
+                            Spacer(Modifier.weight(1f)) // Placeholder con peso
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -125,19 +152,18 @@ private fun Buttons(
     viewModel: CalculatorViewModel = CalculatorViewModel(),
     value: String, onClick: (String) -> Unit
 ) {
-    val color = viewModel.changeColor(value)
+
     Card(
         modifier = Modifier
             .padding(3.dp)
             .then(modifier), shape = RoundedCornerShape(0),
-        colors = CardDefaults.cardColors(color.backGround),
         onClick = { onClick(value) }
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = value, color = color.textColor)
+            Text(text = value)
         }
     }
 }

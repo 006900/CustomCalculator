@@ -51,7 +51,9 @@ fun Content(modifier: Modifier = Modifier) {
         keys.chunked(3).forEach { alan->
             Row (modifier= Modifier.weight(1.25f).fillMaxSize().background(Color.Green)){
                alan.forEach { text ->
-                   BTC(modifier= Modifier.weight(1f),text = text)
+
+                       BTC(modifier= Modifier.weight(1f),text = text)
+
                }
             }
         }
@@ -60,7 +62,7 @@ fun Content(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun BTC(modifier: Modifier = Modifier,text: String) {
+private fun BTC(modifier: Modifier = Modifier,text: String) {
     Card (
         modifier = Modifier
             .fillMaxSize()

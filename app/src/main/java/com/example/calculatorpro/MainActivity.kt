@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.calculatorpro.core.CalculatorViewModel
 import com.example.calculatorpro.core.CurrencyConverterScreen
+import com.example.calculatorpro.core.Sexo
 import com.example.calculatorpro.core.navigation.NavigationWrapper
 import com.example.calculatorpro.ui.theme.CalculatorProTheme
 
